@@ -1,98 +1,95 @@
-package user_repository
+package repository
 
 import (
-	"context"
-	"time"
-
-	"github.com/phkress/mongo/database"
-	"github.com/phkress/mongo/models"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/phkress/mongo/model"
 )
 
-var collection = database.GetCollection("users")
-var ctx = context.Background()
-
-func Create(user models.User) error {
-
-	var err error
-	_, err = collection.InsertOne(ctx, user)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+type UserRepository interface {
+	Create(user model.User) error
+	//	Read() (model.Users, error)
+	//	Update(user model.User, userId string) error
+	//	Delete(userID string) error
 }
 
-func Read() (models.Users, error) {
-	var users models.Users
+// func Create(user model.User) error {
 
-	filter := bson.D{}
+// 	var err error
+// 	_, err = collection.InsertOne(ctx, user)
 
-	cur, err := collection.Find(ctx, filter)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	if err != nil {
-		return nil, err
-	}
+// 	return nil
+// }
+// func Read() (model.Users, error) {
+// 	var users model.Users
 
-	for cur.Next(ctx) {
-		var user models.User
+// 	filter := bson.D{}
 
-		err = cur.Decode(&user)
+// 	cur, err := collection.Find(ctx, filter)
 
-		if err != nil {
-			return nil, err
-		}
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-		users = append(users, &user)
-	}
+// 	for cur.Next(ctx) {
+// 		var user model.User
 
-	return users, nil
-}
-func Update(user models.User, userId string) error {
+// 		err = cur.Decode(&user)
 
-	var err error
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-	oid, _ := primitive.ObjectIDFromHex(userId)
+// 		users = append(users, &user)
+// 	}
 
-	filter := bson.M{"_id": oid}
+// 	return users, nil
+// }
+// func Update(user model.User, userId string) error {
 
-	update := bson.M{
-		"$set": bson.M{
-			"name":       user.Name,
-			"email":      user.Email,
-			"updated_at": time.Now(),
-		},
-	}
+// 	var err error
 
-	_, err = collection.UpdateOne(ctx, filter, update)
+// 	oid, _ := primitive.ObjectIDFromHex(userId)
 
-	if err != nil {
-		return err
-	}
+// 	filter := bson.M{"_id": oid}
 
-	return nil
-}
-func Delete(userId string) error {
+// 	update := bson.M{
+// 		"$set": bson.M{
+// 			"name":       user.Name,
+// 			"email":      user.Email,
+// 			"updated_at": time.Now(),
+// 		},
+// 	}
 
-	var err error
-	var oid primitive.ObjectID
+// 	_, err = collection.UpdateOne(ctx, filter, update)
 
-	oid, err = primitive.ObjectIDFromHex(userId)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	if err != nil {
-		return err
-	}
+// 	return nil
+// }
+// func Delete(userId string) error {
 
-	filter := bson.M{"_id": oid}
+// 	var err error
+// 	var oid primitive.ObjectID
 
-	_, err = collection.DeleteOne(ctx, filter)
+// 	oid, err = primitive.ObjectIDFromHex(userId)
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
+// 	filter := bson.M{"_id": oid}
 
-}
+// 	_, err = collection.DeleteOne(ctx, filter)
+
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+
+// }
